@@ -33,6 +33,8 @@ export interface Platform {
 // about every bounded context at once. Each service itself only knows the
 // shared event contracts in @lpc/shared-kernel and the EventBus port --
 // never each other's internals, and often not even each other's existence.
+// Both the CLI demo (apps/demo) and the HTTP API (apps/api) call this to
+// get an identically-wired platform instance.
 export function wirePlatform(): Platform {
   const eventBus = new InMemoryEventBus();
 

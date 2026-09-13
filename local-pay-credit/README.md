@@ -94,6 +94,7 @@ local-pay-credit/
   packages/
     shared-kernel/       # DomainEvent + event payload contracts, Money value object
     event-bus/            # EventBus port + InMemoryEventBus
+    platform/              # composition root: wires every service to one event bus
   services/
     payment-service/      # hexagonal core + 4 adapters + CQRS write side
     credit-service/       # DDD credit/BNPL domain
@@ -101,7 +102,8 @@ local-pay-credit/
     notification-service/ # SMS/WhatsApp adapters, reacts to events
     merchant-dashboard-service/ # CQRS read side (projection + query service)
   apps/
-    demo/                 # composition root: wires every service to one event bus
+    demo/                 # CLI script that runs one scenario end to end and exits
+    api/                   # long-running HTTP server exposing the same platform
 ```
 
 ## Running the scaffold
@@ -109,7 +111,7 @@ local-pay-credit/
 ```
 npm install
 npm run typecheck   # tsc --noEmit across every workspace
-npm run demo        # runs apps/demo/src/index.ts end to end
+npm run demo        # runs apps/demo/src/index.ts end to end, then exits
 ```
 
 The demo onboards a merchant, grants a customer a BNPL credit limit,
@@ -118,6 +120,48 @@ the customer into a 3-installment plan, and prints the merchant dashboard's
 read-model summary — showing the event chain (`PaymentSucceeded` →
 credit score update, SMS/WhatsApp notification, dashboard projection
 update) actually firing.
+
+## Running the HTTP API
+
+```
+npm run api    # starts an Express server on http://localhost:3000 (PORT env var to override)
+```
+
+It stays running until you stop it (Ctrl+C). Endpoints, all JSON in/out:
+
+| Method | Path | Body | Purpose |
+|---|---|---|---|
+| POST | `/merchants` | `{ merchantId?, legalName, taxRegistrationNumber }` | Onboard a merchant (KYC starts `pending`) |
+| GET | `/merchants/:merchantId` | — | Read a merchant |
+| POST | `/merchants/:merchantId/kyc/approve` | — | Approve KYC |
+| POST | `/merchants/:merchantId/kyc/reject` | `{ reason }` | Reject KYC |
+| GET | `/merchants/:merchantId/dashboard` | — | CQRS read-side summary |
+| POST | `/credit/:customerId/limit` | `{ amount, currency }` | Grant a BNPL credit limit |
+| GET | `/credit/:customerId/score` | — | Read the customer's credit score |
+| POST | `/credit/:customerId/installment-plans` | `{ planId?, amount, currency, numberOfInstallments }` | Split a purchase into installments |
+| POST | `/payments` | `{ provider, transactionId?, merchantId, customerId, amount, currency }` | Process a payment (`provider` is one of `qi-card`, `zain-cash`, `visa-mastercard`, `cash-agent`) |
+
+Example, once the server is running:
+
+```bash
+curl -X POST localhost:3000/merchants -H 'Content-Type: application/json' \
+  -d '{"merchantId":"merchant-1","legalName":"Baghdad Electronics Co.","taxRegistrationNumber":"IQ-TAX-00123"}'
+
+curl -X POST localhost:3000/merchants/merchant-1/kyc/approve
+
+curl -X POST localhost:3000/credit/customer-1/limit -H 'Content-Type: application/json' \
+  -d '{"amount":500000,"currency":"IQD"}'
+
+curl -X POST localhost:3000/payments -H 'Content-Type: application/json' \
+  -d '{"provider":"zain-cash","merchantId":"merchant-1","customerId":"customer-1","amount":150000,"currency":"IQD"}'
+
+curl localhost:3000/merchants/merchant-1/dashboard
+```
+
+State lives only in memory for the process lifetime (same as the demo) —
+restarting the server clears everything. A malformed request or an
+unregistered merchant/provider comes back as a `400` with `{ "error": "..." }`
+rather than a stack trace.
 
 ## What's mocked, and what production needs
 

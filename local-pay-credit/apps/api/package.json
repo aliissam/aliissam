@@ -1,5 +1,5 @@
 {
-  "name": "demo",
+  "name": "api",
   "version": "0.1.0",
   "private": true,
   "main": "src/index.ts",
@@ -10,9 +10,11 @@
   },
   "dependencies": {
     "@lpc/platform": "*",
-    "@lpc/shared-kernel": "*"
+    "@lpc/shared-kernel": "*",
+    "express": "^4.21.1"
   },
   "devDependencies": {
+    "@types/express": "^4.17.21",
     "ts-node": "^10.9.2",
     "typescript": "^5.6.3"
   }

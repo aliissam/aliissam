@@ -1,5 +1,5 @@
 import { Money } from '@lpc/shared-kernel';
-import { wirePlatform } from './wire';
+import { wirePlatform } from '@lpc/platform';
 
 async function main(): Promise<void> {
   const platform = wirePlatform();
