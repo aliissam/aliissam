@@ -7,3 +7,5 @@ dist/
 *.suo
 *.log
 *.wim
+node_modules/
+*.tsbuildinfo
