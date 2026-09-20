@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CCNA ARCADE // Retro Network Quest</title>
+<meta name="description" content="A retro arcade quiz game for CCNA 200-301 exam prep.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="crt">
+  <div class="scanlines"></div>
+  <div class="vignette"></div>
+  <div class="flicker"></div>
+</div>
+
+<main class="cabinet">
+  <header class="marquee">
+    <h1><span class="glow">CCNA</span> ARCADE</h1>
+    <p class="subtitle">// RETRO NETWORK QUEST //</p>
+  </header>
+
+  <div id="hud" class="hud hidden">
+    <div class="hud-item">LEVEL <span id="hud-level">1</span></div>
+    <div class="hud-item">SCORE <span id="hud-score">0000</span></div>
+    <div class="hud-item">STREAK <span id="hud-streak">0</span>x</div>
+    <div class="hud-item lives">LIVES <span id="hud-lives">&#9829;&#9829;&#9829;</span></div>
+  </div>
+
+  <section id="screen-boot" class="screen active">
+    <pre class="ascii-router" aria-hidden="true">
+   ______________________
+  |  o  o  o  o  o  o  o |
+  |  ROUTER1  [CCNA-OS]  |
+  |______________________|
+       ||    ||    ||
+    </pre>
+    <p class="blink-text">INSERT KNOWLEDGE TO CONTINUE</p>
+    <button id="btn-start" class="arcade-btn primary">PRESS START</button>
+    <button id="btn-howto" class="arcade-btn">HOW TO PLAY</button>
+    <button id="btn-scores" class="arcade-btn">HIGH SCORES</button>
+    <p class="footnote">200-301 EXAM TOPICS &middot; 6 WORLDS &middot; NO CARTRIDGE REQUIRED</p>
+  </section>
+
+  <section id="screen-howto" class="screen">
+    <h2>HOW TO PLAY</h2>
+    <ul class="howto-list">
+      <li>Clear 6 WORLDS, one per CCNA exam domain.</li>
+      <li>Each world is a run of questions. Answer with <kbd>1</kbd>-<kbd>4</kbd> or click/tap.</li>
+      <li>You have <strong>20 seconds</strong> per question. The clock is part of the fight.</li>
+      <li>Correct = points + combo streak. Wrong or timeout = lose a <strong>&hearts; life</strong>.</li>
+      <li>Every world ends in a <strong>BOSS QUESTION</strong> worth double points.</li>
+      <li>Lose all 3 lives and it's GAME OVER &mdash; but your progress on cleared worlds is saved.</li>
+      <li>Clear all 6 worlds to become a <strong>CCNA CHAMPION</strong>.</li>
+    </ul>
+    <button class="arcade-btn primary back-btn">BACK</button>
+  </section>
+
+  <section id="screen-highscores" class="screen">
+    <h2>HIGH SCORES</h2>
+    <ol id="highscore-list" class="highscore-list"></ol>
+    <button class="arcade-btn primary back-btn">BACK</button>
+  </section>
+
+  <section id="screen-worldselect" class="screen">
+    <h2>SELECT YOUR WORLD</h2>
+    <div id="world-grid" class="world-grid"></div>
+    <button id="btn-worldselect-back" class="arcade-btn">MAIN MENU</button>
+  </section>
+
+  <section id="screen-game" class="screen">
+    <div class="timer-bar-wrap">
+      <div id="timer-bar" class="timer-bar"></div>
+    </div>
+    <div class="question-wrap">
+      <p id="question-count" class="question-count">Q1 / 12</p>
+      <p id="boss-banner" class="boss-banner hidden">&#9888; BOSS QUESTION &#9888;</p>
+      <h3 id="question-text" class="question-text">Loading...</h3>
+    </div>
+    <div id="answers" class="answers"></div>
+    <p id="feedback" class="feedback"></p>
+  </section>
+
+  <section id="screen-levelclear" class="screen">
+    <h2 class="clear-title">WORLD CLEAR!</h2>
+    <div class="results">
+      <p>SCORE THIS RUN: <span id="clear-score">0</span></p>
+      <p>BEST SCORE: <span id="clear-best">0</span></p>
+    </div>
+    <button id="btn-next-world" class="arcade-btn primary">CONTINUE</button>
+    <button id="btn-clear-menu" class="arcade-btn">WORLD SELECT</button>
+  </section>
+
+  <section id="screen-gameover" class="screen">
+    <h2 class="gameover-title">GAME OVER</h2>
+    <p id="gameover-score" class="gameover-score">SCORE: 0</p>
+    <div id="gameover-entry" class="gameover-entry hidden">
+      <p>NEW HIGH SCORE! ENTER YOUR INITIALS:</p>
+      <input id="initials-input" maxlength="3" class="initials-input" autocomplete="off" spellcheck="false">
+      <button id="btn-save-initials" class="arcade-btn primary">SAVE</button>
+    </div>
+    <button id="btn-retry" class="arcade-btn primary">CONTINUE?</button>
+    <button id="btn-gameover-menu" class="arcade-btn">MAIN MENU</button>
+  </section>
+
+  <section id="screen-victory" class="screen">
+    <h2 class="victory-title">CCNA CHAMPION</h2>
+    <p class="victory-text">All 6 worlds cleared. You are network-ready.</p>
+    <p id="victory-score" class="gameover-score">FINAL SCORE: 0</p>
+    <button id="btn-victory-menu" class="arcade-btn primary">MAIN MENU</button>
+  </section>
+
+  <footer class="cabinet-footer">
+    <span>&copy; CCNA ARCADE &mdash; FAN-MADE STUDY TOOL &mdash; NOT AFFILIATED WITH CISCO</span>
+  </footer>
+</main>
+
+<script src="js/questions.js"></script>
+<script src="js/game.js"></script>
+</body>
+</html>
