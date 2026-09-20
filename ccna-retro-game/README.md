@@ -27,9 +27,14 @@ Or host it as-is on GitHub Pages, Netlify, Vercel, etc. — it's fully static.
     Progress, best scores per world, and a top-10 high score table
     persist in `localStorage`.
   - **Study Mode** — learning. No timer, no lives, no score. All 6 worlds
-    are open from the start; browse a world's questions at your own pace
-    with PREV/NEXT, hit **SHOW ANSWER** to reveal the correct choice and
-    read its explanation.
+    are open from the start. Each world has two tabs:
+    - **LEARN**: short concept notes (definitions, how things work,
+      terminology) you just read and flip through — teaching material,
+      not questions.
+    - **PRACTICE**: the same quiz bank as Arcade Mode, browsed at your
+      own pace with PREV/NEXT; hit **SHOW ANSWER** to reveal the correct
+      choice and its explanation whenever you're ready.
+    Finishing the last LEARN note auto-advances into PRACTICE.
 - Retro CRT look (scanlines, glow, pixel font) and 8-bit-style sound
   effects generated live via the Web Audio API — no audio files needed.
 
@@ -38,19 +43,24 @@ Or host it as-is on GitHub Pages, Netlify, Vercel, etc. — it's fully static.
 ```
 index.html       Markup for all screens (title, world select, gameplay, etc.)
 css/style.css     CRT/arcade visual theme
-js/questions.js   Question bank (66 questions across 6 domains)
+js/questions.js   Lesson notes + question bank (38 notes, 66 questions across 6 domains)
 js/game.js        Game state machine, scoring, audio, persistence
 ```
 
-## Adding or editing questions
+## Adding or editing content
 
-Edit `js/questions.js`. Each level is:
+Edit `js/questions.js`. Each level has a `lessons` array (Study Mode's
+LEARN tab) and a `questions` array (both modes' quiz bank):
 
 ```js
 {
   id: "fundamentals",
   name: "NETWORK FUNDAMENTALS",
   icon: "...",
+  lessons: [
+    { title: "The OSI Model", body: "Seven layers describe how data moves..." },
+    // ...
+  ],
   questions: [
     { q: "...", options: ["a", "b", "c", "d"], answer: 1, explain: "Why b is correct..." },
     // ...
@@ -62,6 +72,6 @@ Edit `js/questions.js`. Each level is:
 Exactly one question per level should have `boss: true`, and it should be
 the last one in the array — it's worth double points and gets a special
 on-screen banner. `explain` is shown in both modes: after answering in
-Arcade Mode, and after hitting SHOW ANSWER in Study Mode.
+Arcade Mode, and after hitting SHOW ANSWER in Study Mode's PRACTICE tab.
 
 This is a fan-made study aid, not affiliated with or endorsed by Cisco.

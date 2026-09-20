@@ -353,7 +353,9 @@
   }
 
   // ---------- Study Mode (no timer, no lives, self-paced learning) ----------
-  let study = null; // { levelIndex, qIndex, revealed }
+  // Two sections per world: "learn" (read-only concept notes) and
+  // "practice" (the quiz bank, browsed with reveal-on-demand answers).
+  let study = null; // { levelIndex, section: 'learn'|'practice', index, revealed }
 
   function renderStudyWorldSelect() {
     const grid = $("study-world-grid");
@@ -363,7 +365,7 @@
       card.className = "world-card";
       card.innerHTML =
         '<span class="world-name">' + level.icon + " " + (i + 1) + ". " + level.name + "</span>" +
-        '<span class="world-meta">' + level.questions.length + " CARDS</span>";
+        '<span class="world-meta">' + level.lessons.length + " NOTES &middot; " + level.questions.length + " CARDS</span>";
       card.addEventListener("click", () => startStudy(i));
       grid.appendChild(card);
     });
@@ -372,19 +374,56 @@
   function startStudy(levelIndex) {
     ensureAudio();
     sfx.select();
-    study = { levelIndex, qIndex: 0, revealed: false };
+    study = { levelIndex, section: "learn", index: 0, revealed: false };
+    $("study-world-name").textContent = LEVELS[levelIndex].icon + " " + LEVELS[levelIndex].name;
     showScreen("screen-study");
+    setStudySection("learn");
+  }
+
+  function setStudySection(section) {
+    study.section = section;
+    study.index = 0;
+    study.revealed = false;
+    $("tab-learn").classList.toggle("active", section === "learn");
+    $("tab-practice").classList.toggle("active", section === "practice");
     showStudyCard();
   }
 
   function showStudyCard() {
+    if (study.section === "learn") {
+      showLearnCard();
+    } else {
+      showPracticeCard();
+    }
+  }
+
+  function showLearnCard() {
     const level = LEVELS[study.levelIndex];
-    const q = level.questions[study.qIndex];
+    const lesson = level.lessons[study.index];
+
+    $("study-count").textContent = "Note " + (study.index + 1) + " / " + level.lessons.length;
+    $("study-boss-banner").classList.add("hidden");
+    $("study-question").textContent = lesson.title;
+    $("study-lesson-body").textContent = lesson.body;
+    $("study-lesson-body").classList.remove("hidden");
+    $("study-answers").innerHTML = "";
+    $("btn-study-reveal").classList.add("hidden");
+    $("study-explain").classList.add("hidden");
+
+    $("btn-study-prev").disabled = study.index === 0;
+    const isLast = study.index === level.lessons.length - 1;
+    $("btn-study-next").textContent = isLast ? "START PRACTICE →" : "NEXT →";
+  }
+
+  function showPracticeCard() {
+    const level = LEVELS[study.levelIndex];
+    const q = level.questions[study.index];
     study.revealed = false;
 
-    $("study-count").textContent = "Card " + (study.qIndex + 1) + " / " + level.questions.length + "  ·  " + level.name;
+    $("study-count").textContent = "Card " + (study.index + 1) + " / " + level.questions.length;
     $("study-boss-banner").classList.toggle("hidden", !q.boss);
     $("study-question").textContent = q.q;
+    $("study-lesson-body").classList.add("hidden");
     $("study-explain").textContent = q.explain || "";
     $("study-explain").classList.add("hidden");
     $("btn-study-reveal").classList.remove("hidden");
@@ -399,16 +438,16 @@
       answersEl.appendChild(btn);
     });
 
-    $("btn-study-prev").disabled = study.qIndex === 0;
-    $("btn-study-next").textContent = study.qIndex === level.questions.length - 1 ? "FINISH →" : "NEXT →";
+    $("btn-study-prev").disabled = study.index === 0;
+    $("btn-study-next").textContent = study.index === level.questions.length - 1 ? "FINISH →" : "NEXT →";
   }
 
   function revealStudyAnswer() {
-    if (study.revealed) return;
+    if (study.section !== "practice" || study.revealed) return;
     study.revealed = true;
     sfx.select();
     const level = LEVELS[study.levelIndex];
-    const q = level.questions[study.qIndex];
+    const q = level.questions[study.index];
     const buttons = document.querySelectorAll("#study-answers .answer-btn");
     if (buttons[q.answer]) buttons[q.answer].classList.add("correct");
     $("study-explain").classList.remove("hidden");
@@ -439,22 +478,37 @@
 
   $("btn-study-reveal").addEventListener("click", revealStudyAnswer);
 
-  $("btn-study-prev").addEventListener("click", () => {
-    if (study.qIndex === 0) return;
+  $("tab-learn").addEventListener("click", () => {
     sfx.select();
-    study.qIndex -= 1;
+    setStudySection("learn");
+  });
+
+  $("tab-practice").addEventListener("click", () => {
+    sfx.select();
+    setStudySection("practice");
+  });
+
+  $("btn-study-prev").addEventListener("click", () => {
+    if (study.index === 0) return;
+    sfx.select();
+    study.index -= 1;
     showStudyCard();
   });
 
   $("btn-study-next").addEventListener("click", () => {
     const level = LEVELS[study.levelIndex];
+    const deck = study.section === "learn" ? level.lessons : level.questions;
     sfx.select();
-    if (study.qIndex >= level.questions.length - 1) {
-      showScreen("screen-study-worldselect");
-      renderStudyWorldSelect();
+    if (study.index >= deck.length - 1) {
+      if (study.section === "learn") {
+        setStudySection("practice");
+      } else {
+        showScreen("screen-study-worldselect");
+        renderStudyWorldSelect();
+      }
       return;
     }
-    study.qIndex += 1;
+    study.index += 1;
     showStudyCard();
   });
 

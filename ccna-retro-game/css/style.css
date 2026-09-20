@@ -323,6 +323,28 @@ kbd {
   width: 100%;
 }
 
+.study-tabs {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+  justify-content: center;
+}
+.study-tab {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 11px;
+  color: var(--text-dim);
+  background: #05080c;
+  border: 2px solid var(--border);
+  border-radius: 6px;
+  padding: 8px 14px;
+  cursor: pointer;
+}
+.study-tab.active {
+  color: var(--neon-cyan);
+  border-color: var(--neon-cyan);
+  box-shadow: 0 0 10px rgba(45,226,230,0.35);
+}
+
 .study-nav {
   display: flex;
   gap: 10px;

@@ -6,6 +6,36 @@ const LEVELS = [
     id: "fundamentals",
     name: "NETWORK FUNDAMENTALS",
     icon: "\u{1F5A7}",
+    lessons: [
+      {
+        title: "The OSI Model",
+        body: "Seven layers describe how data moves across a network: 7 Application, 6 Presentation, 5 Session, 4 Transport, 3 Network, 2 Data Link, 1 Physical. A common mnemonic (top to bottom): 'All People Seem To Need Data Processing.' Layer 3 handles logical (IP) addressing and routing; Layer 2 handles physical (MAC) addressing within a segment; Layer 1 is the raw bits on the wire or radio.",
+      },
+      {
+        title: "TCP vs UDP",
+        body: "TCP is connection-oriented: it three-way handshakes (SYN, SYN-ACK, ACK), numbers segments, acknowledges receipt, and retransmits lost data — reliable but with more overhead. UDP is connectionless: it just sends datagrams with no handshake, no acknowledgment, no retransmission — faster and lower overhead, used where speed matters more than guaranteed delivery (e.g. DNS lookups, streaming, VoIP).",
+      },
+      {
+        title: "IPv4 Addressing & Subnetting",
+        body: "An IPv4 address is 32 bits, written as 4 decimal octets (e.g. 192.168.1.10). The subnet mask (or /prefix, e.g. /24) splits it into a network portion and a host portion. Block size for a given mask = 256 minus the mask's last non-255 octet value (e.g. /27 -> 256-224=32). To subnet quickly: find which block the address falls into, then network = block start, broadcast = block end, usable hosts = everything in between.",
+      },
+      {
+        title: "Private vs Public IP Ranges",
+        body: "RFC 1918 reserves three private ranges that never route on the public internet: 10.0.0.0/8, 172.16.0.0/12, and 192.168.0.0/16. Any other IPv4 address is potentially public/routable. Private hosts reach the internet via NAT, which translates their private address to a public one at the network edge.",
+      },
+      {
+        title: "IPv6 Basics",
+        body: "IPv6 addresses are 128 bits, written as 8 groups of 4 hex digits (e.g. 2001:0db8::1), with leading zeros and one run of consecutive zero groups abbreviated with '::'. Key address types: Global Unicast (publicly routable, like public IPv4), Unique Local Address / ULA (fc00::/7, private-like), Link-Local (fe80::/10, auto-assigned, never routed), and Multicast (ff00::/8, replaces IPv4 broadcast).",
+      },
+      {
+        title: "Core Network Devices",
+        body: "Hub: dumb Layer 1 repeater, floods every bit to every port (rarely used today). Switch: Layer 2 device, learns MAC addresses and forwards frames only out the correct port, keeps each port its own collision domain. Router: Layer 3 device, forwards packets between different networks based on IP addresses/routing table. Firewall: inspects traffic against a security policy and permits or denies it, usually at a network boundary.",
+      },
+      {
+        title: "Virtualization Basics",
+        body: "A hypervisor lets one physical machine run multiple virtual machines, each with its own OS, by abstracting and allocating CPU/memory/storage/network. Type 1 (bare-metal) hypervisors run directly on hardware (e.g. ESXi); Type 2 (hosted) run on top of a host OS (e.g. VirtualBox). Containers are a lighter-weight alternative that share the host OS kernel instead of virtualizing full hardware.",
+      },
+    ],
     questions: [
       {
         q: "Which OSI layer is responsible for logical addressing and routing between networks?",
@@ -80,6 +110,32 @@ const LEVELS = [
     id: "access",
     name: "NETWORK ACCESS",
     icon: "\u{1F50C}",
+    lessons: [
+      {
+        title: "VLANs",
+        body: "A VLAN (Virtual LAN) is a logical broadcast domain carved out of a physical switch or set of switches, without needing separate hardware per department/team. Hosts in different VLANs can't talk to each other at Layer 2 — a router (or Layer 3 switch) is needed to route between them ('router on a stick' or inter-VLAN routing). Access ports carry traffic for exactly one VLAN; trunk ports carry many.",
+      },
+      {
+        title: "802.1Q Trunking",
+        body: "A trunk link carries traffic for multiple VLANs over one physical link by inserting a 4-byte 802.1Q tag into each frame identifying its VLAN. The native VLAN's traffic is the exception — it's sent untagged. Both ends of a trunk must agree on the native VLAN, or you get VLAN mismatches and connectivity/security issues.",
+      },
+      {
+        title: "Spanning Tree Protocol (STP)",
+        body: "Redundant Layer 2 links prevent single points of failure but create loops, which cause broadcast storms and MAC table instability. STP elects a root bridge, then every other switch computes a root port (best path to the root) and each segment gets a designated port; any other port is blocked. If an active link fails, a blocked port transitions to forwarding. PortFast skips STP's delay on end-host ports; BPDU Guard shuts down a port that shouldn't be receiving STP traffic (e.g. an access port an attacker plugs a switch into).",
+      },
+      {
+        title: "EtherChannel",
+        body: "EtherChannel bundles 2-8 physical links between the same two switches into one logical link, so STP sees a single path (no blocking) while traffic load-balances across the members and survives any one member failing. Negotiated dynamically with LACP (standard) or PAgP (Cisco proprietary), or configured statically with 'on' mode.",
+      },
+      {
+        title: "Wireless Fundamentals",
+        body: "An Access Point (AP) bridges wireless clients onto the wired network. In enterprise deployments, lightweight APs are managed centrally by a Wireless LAN Controller (WLC), which handles RF management, roaming, and security policy (split-MAC architecture) — versus autonomous APs, which are each configured individually. 2.4GHz has longer range/better penetration but more interference and fewer channels; 5GHz has more clean channels and higher speeds but shorter range.",
+      },
+      {
+        title: "Switch Security Features",
+        body: "Port Security limits which/how many MAC addresses can use an access port (defends against MAC flooding and rogue devices). DHCP Snooping tracks which ports are allowed to answer DHCP requests (defends against rogue DHCP servers) and builds a binding table. Dynamic ARP Inspection (DAI) uses that binding table to validate ARP replies and drop spoofed ones (defends against ARP/MITM attacks).",
+      },
+    ],
     questions: [
       {
         q: "What is the primary purpose of VLANs?",
@@ -154,6 +210,32 @@ const LEVELS = [
     id: "connectivity",
     name: "IP CONNECTIVITY",
     icon: "\u{1F310}",
+    lessons: [
+      {
+        title: "How Routing Works",
+        body: "A router receives a packet, strips the destination IP, and looks up the routing table for the best match using longest prefix match — the most specific (largest mask) matching entry always wins, regardless of how it was learned. If nothing matches, the default route (0.0.0.0/0) is used if present; otherwise the packet is dropped.",
+      },
+      {
+        title: "Administrative Distance",
+        body: "When two different sources offer a route to the same destination with the same prefix length, the router trusts the one with the lower Administrative Distance (AD). Common defaults: Directly connected = 0, Static route = 1, EIGRP (internal) = 90, OSPF = 110, RIP = 120. Lower always wins — a static route beats OSPF, which beats RIP.",
+      },
+      {
+        title: "Static vs Dynamic Routing",
+        body: "Static routes are manually configured, predictable, and use no CPU/bandwidth for calculation — but don't adapt if the topology changes, and don't scale well in large networks. Dynamic routing protocols (OSPF, EIGRP, BGP, etc.) automatically discover routes and reroute around failures, at the cost of some overhead and complexity.",
+      },
+      {
+        title: "OSPF Basics",
+        body: "OSPF is a link-state IGP: every router in an area learns the full topology (via Link State Advertisements) and independently runs Dijkstra's SPF algorithm to compute shortest paths. Cost is bandwidth-based (higher bandwidth = lower cost = preferred). Areas keep large networks scalable, with Area 0 as the mandatory backbone; Area Border Routers (ABRs) connect other areas to it. On multi-access segments, a Designated Router (DR) and Backup DR (BDR) are elected to reduce the number of adjacencies needed.",
+      },
+      {
+        title: "First-Hop Redundancy Protocols",
+        body: "Hosts are configured with one default gateway, so if that router fails, they lose their path out — unless an FHRP is running. HSRP (Cisco), VRRP (standard), and GLBP (Cisco, adds load balancing) let two or more routers share a virtual IP/MAC as 'the gateway.' One is active and forwards traffic; if it fails, another takes over automatically and transparently to hosts.",
+      },
+      {
+        title: "Troubleshooting Connectivity",
+        body: "ping (ICMP echo) tests basic Layer 3 reachability and round-trip time. traceroute shows the hop-by-hop path a packet takes and where it stalls or drops. 'show ip route' / 'show ip interface brief' on a router/switch reveal the routing table and interface status — the first places to look when something can't reach its destination.",
+      },
+    ],
     questions: [
       {
         q: "What information does a router use to decide where to forward a packet?",
@@ -228,6 +310,32 @@ const LEVELS = [
     id: "services",
     name: "IP SERVICES",
     icon: "\u{2699}\u{FE0F}",
+    lessons: [
+      {
+        title: "NAT and PAT",
+        body: "Static NAT maps one private IP to one public IP permanently (used for servers that need a consistent public address). Dynamic NAT maps from a pool of public IPs, first-come-first-served. PAT (Port Address Translation, aka NAT overload) lets many private hosts share a single public IP simultaneously by tracking each session with a unique source port — this is what most home/office routers actually run.",
+      },
+      {
+        title: "DHCP (DORA)",
+        body: "DHCP automatically assigns IP configuration to hosts via four messages: Discover (client broadcasts for any server), Offer (a server proposes an address+lease), Request (client asks to accept that offer, broadcast so other servers know they lost), Acknowledge (server confirms the lease). Since Discover is a broadcast, a router needs 'ip helper-address' (DHCP relay) configured to forward requests to a DHCP server on a different subnet.",
+      },
+      {
+        title: "DNS",
+        body: "DNS resolves hostnames to IP addresses through a hierarchy of servers (root -> TLD -> authoritative). Common record types: A (hostname to IPv4), AAAA (hostname to IPv6), CNAME (alias to another hostname), MX (mail server for a domain), PTR (IP to hostname, reverse lookup).",
+      },
+      {
+        title: "Management Protocols: NTP, SNMP, Syslog",
+        body: "NTP synchronizes device clocks to a common accurate time source, so logs and certificates line up across devices. SNMP lets a management station poll devices for health/performance stats (or receive traps when something goes wrong). Syslog centralizes log messages from many devices onto one server, which is far easier to search and alert on than checking each device individually.",
+      },
+      {
+        title: "QoS Basics",
+        body: "Quality of Service prioritizes some traffic over others when a link is congested. Classification and marking identify and tag traffic type (e.g. voice vs bulk downloads). Policing drops or re-marks traffic exceeding a rate (no buffering). Shaping buffers/delays excess traffic to smooth bursts instead of dropping them. Queuing mechanisms then decide which packets go out next when a link is busy.",
+      },
+      {
+        title: "Secure Remote Access",
+        body: "Telnet sends everything — including your password — in cleartext, readable by anyone who can see the traffic. SSH encrypts the entire session (both authentication and data), which is why it has replaced Telnet as the standard for remote CLI management of network devices.",
+      },
+    ],
     questions: [
       {
         q: "What does NAT (Network Address Translation) primarily accomplish?",
@@ -302,6 +410,32 @@ const LEVELS = [
     id: "security",
     name: "SECURITY FUNDAMENTALS",
     icon: "\u{1F512}",
+    lessons: [
+      {
+        title: "The AAA Framework",
+        body: "Authentication verifies who you are (username/password, certificate, MFA). Authorization determines what you're allowed to do once authenticated (which commands, which resources). Accounting logs what you actually did (for audit trails). These are three separate, related controls — a system can authenticate you without authorizing everything, and everything gets logged regardless.",
+      },
+      {
+        title: "Firewalls and ACLs",
+        body: "A firewall enforces a security policy at a network boundary, permitting or denying traffic — stateful firewalls track connection state (and automatically allow return traffic); stateless ones (like basic ACLs) evaluate each packet independently. ACLs are ordered permit/deny statements evaluated top-down with an implicit deny-all at the end. Standard ACLs match source IP only; extended ACLs can match source/destination IP, protocol, and port — use extended when you need precision.",
+      },
+      {
+        title: "VPNs",
+        body: "A VPN builds an encrypted tunnel across an untrusted network (like the internet) so traffic inside it stays confidential and tamper-evident. Site-to-site VPNs permanently connect two networks (e.g. two offices) at the router/firewall level. Remote-access VPNs let an individual user's device securely tunnel into a network from anywhere.",
+      },
+      {
+        title: "Common Layer 2 Attacks and Defenses",
+        body: "MAC flooding overflows a switch's MAC table to force it to flood traffic like a hub, so an attacker can sniff it — defended against with Port Security. Rogue DHCP servers hand out malicious gateway/DNS settings — defended against with DHCP Snooping. ARP spoofing tricks hosts into sending traffic to an attacker's MAC — defended against with Dynamic ARP Inspection. VLAN hopping abuses trunk auto-negotiation to reach VLANs you shouldn't — defended against by disabling auto-trunking on access ports and never using VLAN 1 as the native VLAN.",
+      },
+      {
+        title: "Zero Trust and Least Privilege",
+        body: "Least privilege means every user/system gets only the access it strictly needs — nothing extra 'just in case.' Zero trust extends this to the whole network: never implicitly trust a device or user just because they're 'inside' the perimeter; verify every request regardless of where it comes from.",
+      },
+      {
+        title: "Multi-Factor Authentication",
+        body: "MFA requires two or more independent proof factors from different categories: something you know (password), something you have (phone, hardware token), something you are (fingerprint, face). A stolen password alone isn't enough to log in if a second factor is also required.",
+      },
+    ],
     questions: [
       {
         q: "What does the 'A' stand for in the AAA security framework (besides Authentication)?",
@@ -376,6 +510,36 @@ const LEVELS = [
     id: "automation",
     name: "AUTOMATION & PROGRAMMABILITY",
     icon: "\u{1F916}",
+    lessons: [
+      {
+        title: "Control Plane vs Data Plane",
+        body: "The data plane is what actually moves packets (forwarding based on a table). The control plane decides what goes in that table — traditionally computed independently on every device (routing protocols, STP), but in SDN, centralized in a controller that pushes decisions down to devices.",
+      },
+      {
+        title: "Software-Defined Networking (SDN)",
+        body: "SDN separates the control plane from the data plane and centralizes it in a controller, so the whole network can be configured and reasoned about programmatically instead of device-by-device via CLI. A northbound API lets applications/orchestration tools request services from the controller; a southbound API lets the controller push configuration down to the actual switches/routers.",
+      },
+      {
+        title: "REST APIs and JSON",
+        body: "A REST API exposes a device or controller's functionality over standard HTTP methods: GET (read), POST (create), PUT/PATCH (update), DELETE (remove). Request and response bodies are typically JSON — a lightweight, human-readable key-value data format — which is why understanding basic JSON structure matters for automation.",
+      },
+      {
+        title: "Infrastructure as Code",
+        body: "Instead of manually clicking through a GUI or typing CLI commands on each device, IaC defines the desired configuration in version-controlled, machine-readable files (templates, playbooks). Applying them is repeatable, auditable, and consistent across hundreds of devices — the opposite of manual, error-prone, one-off changes.",
+      },
+      {
+        title: "Automation Tools",
+        body: "Ansible is agentless — it pushes configuration over SSH/API with nothing installed on the managed device, using YAML playbooks. Puppet and Chef are agent-based — they require software running on each managed node that periodically pulls and applies configuration. Terraform focuses on provisioning infrastructure itself (declarative 'desired state').",
+      },
+      {
+        title: "Cisco DNA Center",
+        body: "DNA Center is Cisco's centralized platform for enterprise network design, policy-based provisioning, automation, and assurance (health monitoring/analytics) — a GUI and API-driven alternative to configuring hundreds of devices individually via CLI.",
+      },
+      {
+        title: "YANG, NETCONF, RESTCONF",
+        body: "YANG is a data modeling language that defines the structure of a device's configuration and operational data in a standardized, vendor-neutral way. NETCONF and RESTCONF are the protocols used to actually read and write that YANG-modeled data programmatically, replacing screen-scraping CLI output.",
+      },
+    ],
     questions: [
       {
         q: "In traditional (non-SDN) networking, what does the 'control plane' do?",
