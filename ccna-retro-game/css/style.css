@@ -177,6 +177,14 @@ button, input { font-family: inherit; }
 .arcade-btn.primary:hover { background: #6dff4e; }
 
 /* ---------- How to / high scores ---------- */
+.howto-heading {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 12px;
+  color: var(--neon-magenta);
+  text-shadow: 0 0 6px var(--neon-magenta);
+  align-self: flex-start;
+  margin: 6px 0 0;
+}
 .howto-list {
   text-align: left;
   max-width: 520px;
@@ -302,6 +310,27 @@ kbd {
   font-size: 19px;
   color: var(--neon-yellow);
 }
+
+.explain-text {
+  font-size: 18px;
+  line-height: 1.4;
+  color: var(--neon-cyan);
+  background: #05080c;
+  border: 1px dashed var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  text-align: left;
+  width: 100%;
+}
+
+.study-nav {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  justify-content: center;
+}
+.study-nav .arcade-btn { min-width: 150px; }
+.answer-btn:disabled { opacity: 0.9; }
 
 /* ---------- End screens ---------- */
 .clear-title { color: var(--neon-green); text-shadow: 0 0 10px var(--neon-green); font-family: 'Press Start 2P', monospace; font-size: 18px; }

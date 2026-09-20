@@ -178,6 +178,7 @@
     $("boss-banner").classList.toggle("hidden", !q.boss);
     $("question-text").textContent = q.q;
     $("feedback").textContent = "";
+    $("explain-text").textContent = "";
 
     const timerBar = $("timer-bar");
     timerBar.style.width = "100%";
@@ -244,6 +245,8 @@
       run.lives -= 1;
       $("feedback").textContent = choiceIndex === -1 ? "TIME'S UP!" : "WRONG!";
     }
+
+    if (q.explain) $("explain-text").textContent = q.explain;
 
     updateHud();
 
@@ -349,6 +352,69 @@
     });
   }
 
+  // ---------- Study Mode (no timer, no lives, self-paced learning) ----------
+  let study = null; // { levelIndex, qIndex, revealed }
+
+  function renderStudyWorldSelect() {
+    const grid = $("study-world-grid");
+    grid.innerHTML = "";
+    LEVELS.forEach((level, i) => {
+      const card = document.createElement("button");
+      card.className = "world-card";
+      card.innerHTML =
+        '<span class="world-name">' + level.icon + " " + (i + 1) + ". " + level.name + "</span>" +
+        '<span class="world-meta">' + level.questions.length + " CARDS</span>";
+      card.addEventListener("click", () => startStudy(i));
+      grid.appendChild(card);
+    });
+  }
+
+  function startStudy(levelIndex) {
+    ensureAudio();
+    sfx.select();
+    study = { levelIndex, qIndex: 0, revealed: false };
+    showScreen("screen-study");
+    showStudyCard();
+  }
+
+  function showStudyCard() {
+    const level = LEVELS[study.levelIndex];
+    const q = level.questions[study.qIndex];
+    study.revealed = false;
+
+    $("study-count").textContent = "Card " + (study.qIndex + 1) + " / " + level.questions.length + "  ·  " + level.name;
+    $("study-boss-banner").classList.toggle("hidden", !q.boss);
+    $("study-question").textContent = q.q;
+    $("study-explain").textContent = q.explain || "";
+    $("study-explain").classList.add("hidden");
+    $("btn-study-reveal").classList.remove("hidden");
+
+    const answersEl = $("study-answers");
+    answersEl.innerHTML = "";
+    q.options.forEach((opt, i) => {
+      const btn = document.createElement("button");
+      btn.className = "answer-btn";
+      btn.disabled = true;
+      btn.innerHTML = '<span class="k">' + (i + 1) + "</span>" + opt;
+      answersEl.appendChild(btn);
+    });
+
+    $("btn-study-prev").disabled = study.qIndex === 0;
+    $("btn-study-next").textContent = study.qIndex === level.questions.length - 1 ? "FINISH →" : "NEXT →";
+  }
+
+  function revealStudyAnswer() {
+    if (study.revealed) return;
+    study.revealed = true;
+    sfx.select();
+    const level = LEVELS[study.levelIndex];
+    const q = level.questions[study.qIndex];
+    const buttons = document.querySelectorAll("#study-answers .answer-btn");
+    if (buttons[q.answer]) buttons[q.answer].classList.add("correct");
+    $("study-explain").classList.remove("hidden");
+    $("btn-study-reveal").classList.add("hidden");
+  }
+
   // ---------- Navigation wiring ----------
   $("btn-start").addEventListener("click", () => {
     ensureAudio();
@@ -356,6 +422,46 @@
     hud.classList.add("hidden");
     showScreen("screen-worldselect");
     renderWorldSelect();
+  });
+
+  $("btn-study").addEventListener("click", () => {
+    ensureAudio();
+    sfx.select();
+    hud.classList.add("hidden");
+    showScreen("screen-study-worldselect");
+    renderStudyWorldSelect();
+  });
+
+  $("btn-study-back").addEventListener("click", () => {
+    sfx.select();
+    showScreen("screen-boot");
+  });
+
+  $("btn-study-reveal").addEventListener("click", revealStudyAnswer);
+
+  $("btn-study-prev").addEventListener("click", () => {
+    if (study.qIndex === 0) return;
+    sfx.select();
+    study.qIndex -= 1;
+    showStudyCard();
+  });
+
+  $("btn-study-next").addEventListener("click", () => {
+    const level = LEVELS[study.levelIndex];
+    sfx.select();
+    if (study.qIndex >= level.questions.length - 1) {
+      showScreen("screen-study-worldselect");
+      renderStudyWorldSelect();
+      return;
+    }
+    study.qIndex += 1;
+    showStudyCard();
+  });
+
+  $("btn-study-menu").addEventListener("click", () => {
+    sfx.select();
+    showScreen("screen-study-worldselect");
+    renderStudyWorldSelect();
   });
 
   $("btn-howto").addEventListener("click", () => {

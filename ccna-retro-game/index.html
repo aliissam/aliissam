@@ -40,7 +40,8 @@
        ||    ||    ||
     </pre>
     <p class="blink-text">INSERT KNOWLEDGE TO CONTINUE</p>
-    <button id="btn-start" class="arcade-btn primary">PRESS START</button>
+    <button id="btn-start" class="arcade-btn primary">ARCADE MODE</button>
+    <button id="btn-study" class="arcade-btn primary">STUDY MODE</button>
     <button id="btn-howto" class="arcade-btn">HOW TO PLAY</button>
     <button id="btn-scores" class="arcade-btn">HIGH SCORES</button>
     <p class="footnote">200-301 EXAM TOPICS &middot; 6 WORLDS &middot; NO CARTRIDGE REQUIRED</p>
@@ -48,6 +49,7 @@
 
   <section id="screen-howto" class="screen">
     <h2>HOW TO PLAY</h2>
+    <p class="howto-heading">ARCADE MODE (testing)</p>
     <ul class="howto-list">
       <li>Clear 6 WORLDS, one per CCNA exam domain.</li>
       <li>Each world is a run of questions. Answer with <kbd>1</kbd>-<kbd>4</kbd> or click/tap.</li>
@@ -56,6 +58,14 @@
       <li>Every world ends in a <strong>BOSS QUESTION</strong> worth double points.</li>
       <li>Lose all 3 lives and it's GAME OVER &mdash; but your progress on cleared worlds is saved.</li>
       <li>Clear all 6 worlds to become a <strong>CCNA CHAMPION</strong>.</li>
+      <li>After every answer you'll see a short explanation of the correct answer.</li>
+    </ul>
+    <p class="howto-heading">STUDY MODE (learning)</p>
+    <ul class="howto-list">
+      <li>No timer, no lives, no score &mdash; just you and the material.</li>
+      <li>Pick any world (all unlocked) and flip through it question by question.</li>
+      <li>Hit <strong>SHOW ANSWER</strong> to reveal the correct choice and its explanation.</li>
+      <li>Use PREV/NEXT to move at your own pace, in any order.</li>
     </ul>
     <button class="arcade-btn primary back-btn">BACK</button>
   </section>
@@ -83,6 +93,28 @@
     </div>
     <div id="answers" class="answers"></div>
     <p id="feedback" class="feedback"></p>
+    <p id="explain-text" class="explain-text"></p>
+  </section>
+
+  <section id="screen-study-worldselect" class="screen">
+    <h2>STUDY MODE &mdash; PICK A TOPIC</h2>
+    <p class="howto-heading">No timer. No lives. Learn at your pace.</p>
+    <div id="study-world-grid" class="world-grid"></div>
+    <button id="btn-study-back" class="arcade-btn">MAIN MENU</button>
+  </section>
+
+  <section id="screen-study" class="screen">
+    <p id="study-count" class="question-count">Card 1 / 12</p>
+    <p id="study-boss-banner" class="boss-banner hidden">&#9888; KEY EXAM SCENARIO &#9888;</p>
+    <h3 id="study-question" class="question-text">Loading...</h3>
+    <div id="study-answers" class="answers"></div>
+    <button id="btn-study-reveal" class="arcade-btn primary">SHOW ANSWER</button>
+    <p id="study-explain" class="explain-text hidden"></p>
+    <div class="study-nav">
+      <button id="btn-study-prev" class="arcade-btn">&larr; PREV</button>
+      <button id="btn-study-next" class="arcade-btn primary">NEXT &rarr;</button>
+    </div>
+    <button id="btn-study-menu" class="arcade-btn">WORLD LIST</button>
   </section>
 
   <section id="screen-levelclear" class="screen">
