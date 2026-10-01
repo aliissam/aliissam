@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>My Blog</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="layout">
+    <header class="top">
+      <div class="brand">
+        <h1 id="site-name">My Blog</h1>
+        <p id="site-tagline"></p>
+      </div>
+      <button class="theme-toggle" id="theme-toggle" type="button">🌓 Theme</button>
+    </header>
+
+    <nav class="tabs" id="tabs">
+      <button data-target="home" class="active">Home</button>
+      <button data-target="books">Books</button>
+      <button data-target="films">Films &amp; Series</button>
+      <button data-target="courses">Courses</button>
+      <button data-target="games">Games</button>
+      <button data-target="habits">Habits</button>
+      <button data-target="interests">Interests</button>
+    </nav>
+
+    <section class="panel active" id="home">
+      <h2>Welcome</h2>
+      <p class="subtitle">A running log of what I'm reading, watching, playing, studying, and building habits around.</p>
+      <div class="grid" id="home-summary"></div>
+    </section>
+
+    <section class="panel" id="books">
+      <h2>Books</h2>
+      <p class="subtitle">What I'm reading, finished, and want to get to.</p>
+      <div class="grid" id="books-grid"></div>
+    </section>
+
+    <section class="panel" id="films">
+      <h2>Films &amp; Series</h2>
+      <p class="subtitle">Movies and shows I'm watching or want to watch.</p>
+      <div class="grid" id="films-grid"></div>
+    </section>
+
+    <section class="panel" id="courses">
+      <h2>Courses</h2>
+      <p class="subtitle">Things I want to study or am studying right now.</p>
+      <div class="grid" id="courses-grid"></div>
+    </section>
+
+    <section class="panel" id="games">
+      <h2>Games</h2>
+      <p class="subtitle">What I'm playing or want to play.</p>
+      <div class="grid" id="games-grid"></div>
+    </section>
+
+    <section class="panel" id="habits">
+      <h2>Habits</h2>
+      <p class="subtitle">Tap the circle on a day you did it. Streaks are saved in this browser only (localStorage) — nothing is sent anywhere.</p>
+      <div class="grid" id="habits-grid"></div>
+    </section>
+
+    <section class="panel" id="interests">
+      <h2>Interests</h2>
+      <p class="subtitle">Other things I'm into.</p>
+      <div class="grid" id="interests-grid"></div>
+    </section>
+
+    <footer>Edit <code>data.js</code> to add your own books, films, courses, games, habits, and interests.</footer>
+  </div>
+
+  <script src="data.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
